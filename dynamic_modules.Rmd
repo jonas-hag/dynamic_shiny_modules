@@ -1,0 +1,125 @@
+---
+title: "Dynamically adding and removing Shiny modules"
+author: "Jonas Hagenberg"
+institute: "Appsilon Shiny Conference"
+date: "27.04.2022"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_duo_accent(
+  primary_color = "#1a5f96",
+  secondary_color = "#03A696",
+  code_inline_background_color = "#f8f8f8"
+)
+```
+
+# Recap: Shiny modules
+- reusable pieces of Shiny code
+- a module consists of an UI and a server part
+- can think of it as a "mini Shiny app"
+- can be used several times within an app
+- every module instance needs an `id` to be unique within the app
+
+---
+# Module structure - main app
+```{r, eval = FALSE}
+# define the UI part
+ui <- fluidPage(
+  # other UI elements
+  # ...
+  # module UI
+* module_UI(id = "id_1")
+)
+
+# define the server part
+server <- function(input, output,
+                   session) {
+  # other logic
+  # ...
+  # module logic
+* module_server(id = "id_1")
+}
+
+shinyApp(ui, server)
+```
+
+???
+- you call the module UI part (here called `module_UI`) in the main app UI function
+- you call the module server part (here called `module_server`) in the server
+function of the main app
+- as you can see, they need an ID to make them unique and connect the server & UI part
+
+---
+# Module structure - modules
+```{r, eval = FALSE}
+# define the UI part
+module_UI <- function(id) {
+* ns <- NS(id)
+  
+  tagList(
+    # your UI elements here
+  )
+}
+
+# define the server part
+module_server <- function(id) {
+* moduleServer(
+    id,
+    function(input, output, session) {
+      # your logic here
+    }
+  )
+}
+```
+???
+- scaffold of a module
+- in the UI part you need take care of the namespacing so that everything is
+unique for this instance of the module
+- the server part looks very similar to main app server function
+
+---
+# Dynamic modules
+- modules are either called when writing the Shiny app or dynamically
+--
+
+- dynamic modules can be useful when:
+  - something has to be repeated based on user input
+  - e.g. show several plots or tables
+  - a set of UI elements
+--
+
+- can become complex easily -> use it with care!
+  
+???
+- set of UI elements: e.g. additional layers in plots that can be controlled
+
+---
+class: inverse, center, middle
+
+### Livecoding: dynamically add a module
+
+???
+- how to get from static modules to dynamically added modules?
+
+---
+# Adding modules
+When adding a module:
+- call the module `server` function
+- insert the module UI elements with `insertUI`
+- use an appropriate `selector` where to insert the UI - one can use an empty `div`
+with an `id`
+- use a different `id` for every added module instance
