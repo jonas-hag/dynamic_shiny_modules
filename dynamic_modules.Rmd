@@ -123,3 +123,53 @@ When adding a module:
 - use an appropriate `selector` where to insert the UI - one can use an empty `div`
 with an `id`
 - use a different `id` for every added module instance
+
+---
+# How to remove a module
+- remove UI part with `removeUI`
+- needs to provide a selector
+- works well for one UI element but not for several in module UI
+- wrap UI elements with `div` with module `id` instead of `tagList`
+
+```{r, eval = FALSE}
+module_UI <- function(id) {
+  ns <- NS(id)
+  div( #<<
+    id = id,
+    # your UI elements here
+  )
+}
+```
+
+???
+- the selector is based on the id of the UI elements
+- in our case the id of the module
+
+---
+class: inverse, center, middle
+
+### Livecoding: dynamically remove a module
+
+---
+# Recap: remove UI of a module
+- use `removeUI`
+- create a selector with `#` and the module `id`
+- use a naming scheme for the modules that can be easily incremented/decremented
+
+???
+- this removes the contents of the module on the client side
+
+---
+# How to remove the server part
+- so far, only UI elements were removed
+- `input`s, `reactive`s and `observeEvent`s of the module are still in
+the server part
+- can negatively influence the performance
+- therefore also remove these
+
+---
+# Remove `input`s
+
+???
+- `input`s would be recycled if a module with the same name is created again
+- currently don't know a way to remove `reactive` expressions
