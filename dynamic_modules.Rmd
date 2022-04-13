@@ -173,3 +173,29 @@ the server part
 ???
 - `input`s would be recycled if a module with the same name is created again
 - currently don't know a way to remove `reactive` expressions
+
+--
+
+```{r, eval = FALSE}
+remove_shiny_inputs <- function(id, .input) {
+  invisible(
+    lapply(grep(id, names(.input), value = TRUE), function(i) {
+      .subset2(.input, "impl")$.values$remove(i) #<<
+    })
+  )
+}
+```
+
+By [Thomas Roh](https://roh.engineering/posts/2020/02/shiny-add/removing-modules-dynamically/), CC BY-NC 4.0
+
+???
+- pass the `id` of the module that should be removed (`id`), the different inputs
+are matched automatically
+- pass the list (here: `input`) where the inputs are stored
+- for every module input, call the `remove` method
+- rather hacky method, not Shiny official
+
+---
+class: inverse, center, middle
+
+### Livecoding: remove inputs
