@@ -22,7 +22,6 @@ graph_server <- function(id) {
     id,
     function(input, output, session) {
       output$plot_1 <- renderPlot({
-        req(input$plottype)
         p <- ggplot(mtcars, aes(x = mpg))
         
         if (input$plottype == "boxplot") {
