@@ -33,7 +33,7 @@ https://github.com/jonas-hag/dynamic_shiny_modules
 
 ---
 # Dynamic modules
-- modules are either called when writing the Shiny app or dynamically
+- modules are either called when initialising the Shiny app or dynamically
 --
 
 - dynamic modules can be useful when:
