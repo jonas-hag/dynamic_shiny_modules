@@ -23,71 +23,9 @@ class: center, middle, inverse, title-slide
 
 
 
-# Recap: Shiny modules
-- reusable pieces of Shiny code
-- a module consists of an UI and a server part
-- can think of it as a "mini Shiny app"
-- can be used several times within an app
-- every module instance needs an `id` to be unique within the app
-
----
-# Module structure - main app
-
-```r
-# define the UI part
-ui &lt;- fluidPage(
-  # other UI elements
-  # ...
-  # module UI
-* module_UI(id = "id_1")
-)
-
-# define the server part
-server &lt;- function(input, output,
-                   session) {
-  # other logic
-  # ...
-  # module logic
-* module_server(id = "id_1")
-}
-
-shinyApp(ui, server)
-```
-
-???
-- you call the module UI part (here called `module_UI`) in the main app UI function
-- you call the module server part (here called `module_server`) in the server
-function of the main app
-- as you can see, they need an ID to make them unique and connect the server &amp; UI part
-
----
-# Module structure - modules
-
-```r
-# define the UI part
-module_UI &lt;- function(id) {
-* ns &lt;- NS(id)
-  
-  tagList(
-    # your UI elements here
-  )
-}
-
-# define the server part
-module_server &lt;- function(id) {
-* moduleServer(
-    id,
-    function(input, output, session) {
-      # your logic here
-    }
-  )
-}
-```
-???
-- scaffold of a module
-- in the UI part you need take care of the namespacing so that everything is
-unique for this instance of the module
-- the server part looks very similar to main app server function
+# Code availability
+Find the code on github:
+https://github.com/jonas-hag/dynamic_shiny_modules
 
 ---
 # Dynamic modules
@@ -104,6 +42,126 @@ unique for this instance of the module
   
 ???
 - set of UI elements: e.g. additional layers in plots that can be controlled
+- how to get from static modules to dynamically added modules? -&gt; livecoding
+
+---
+# Selectors
+- used in `jQuery`, the JavaScript framework used by Shiny
+- based on CSS selectors
+- can select e.g. element types
+- for us relevant: select elements by `id`
+
+---
+# Adding modules
+When adding a module:
+- call the module `server` function
+- insert the module UI elements with `insertUI`
+- use an appropriate `selector` where to insert the UI - one can use an empty `div`
+with an `id`
+- use a different `id` for every added module instance
+
+---
+# How to remove a module
+- remove UI part with `removeUI`
+- needs to provide a selector
+- works well for one UI element but not for several in module UI
+- wrap UI elements with `div` with module `id` instead of `tagList`
+
+
+```r
+module_UI &lt;- function(id) {
+  ns &lt;- NS(id)
+* div(
+    id = id,
+    # your UI elements here
+  )
+}
+```
+
+???
+- the selector is based on the id of the UI elements
+- in our case the id of the module
+
+---
+# Recap: remove UI of a module
+- use `removeUI`
+- create a selector with `#` and the module `id`
+- use a naming scheme for the modules that can be easily incremented/decremented
+
+???
+- this removes the contents of the module on the client side
+
+---
+# How to remove the server part
+- so far, only UI elements were removed
+- `input`s, `reactive`s and `observeEvent`s of the module are still in
+the server part
+- can negatively influence the performance
+- therefore also remove these
+
+---
+# Remove `input`s
+- `input`s would be recycled if a module with the same name is created again
+
+--
+
+
+```r
+remove_shiny_inputs &lt;- function(id, .input) {
+  invisible(
+    lapply(grep(id, names(.input), value = TRUE), function(i) {
+*     .subset2(.input, "impl")$.values$remove(i)
+    })
+  )
+}
+```
+
+By [Thomas Roh](https://roh.engineering/posts/2020/02/shiny-add/removing-modules-dynamically/), CC BY-NC 4.0
+
+???
+- pass the `id` of the module that should be removed (`id`), the different inputs
+are matched automatically
+- pass the list (here: `input`) where the inputs are stored
+- for every module input, call the `remove` method
+- rather hacky method, not Shiny official
+- currently don't know a way to remove `reactive` expressions
+
+---
+# Destroy `observeEvent`s
+- `observeEvent`s stay registered and are duplicated when a module with the
+same `id` is added again
+- many registered `observeEvent`s can negatively impact the performance
+- solution: use the `destroy` method of an `observeEvent`
+- store the `observeEvent` to `session$userData` to access it
+
+Check out [Appsilon's blog post](https://appsilon.com/how-to-safely-remove-a-dynamic-shiny-module/) on this topic
+
+---
+# Function to destroy `observeEvent`s
+If you name `observeEvent`s in your modules according to the scheme\
+`{module id}_observer_{observe name}`\
+you can use the following function to
+destroy them:
+
+
+```r
+remove_observers &lt;- function(id, .session) {
+  invisible(
+    lapply(grep(paste0(id, "_observer"), names(.session$userData), value = TRUE),
+           function(i) {
+             .subset2(.session$userData, i)$destroy()
+           })
+  )
+}
+```
+
+---
+# Summary
+- use `insertUI`/`removeUI` for the module UI
+- remove inputs and destroy `observeEvent`s to clean up the server side and
+avoid performance issues
+- use incremental or unique `id`s to avoid problems
+- use dynamic addition/removal only sparingly
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
