@@ -37,16 +37,11 @@ graph_server <- function(id) {
 }
 
 ui <- fluidPage(
-  actionButton(
-    inputId = "add_module",
-    label = "Add a module"
-  )
+  graph_UI("my_module")
 )
 
 server <- function(input, output, session) {
-  observeEvent(input$add_module, {
-    
-  })
+  graph_server("my_module")
 }
 
 shinyApp(ui, server)
