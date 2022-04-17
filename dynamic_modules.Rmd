@@ -104,7 +104,7 @@ the server part
 
 ---
 # Remove `input`s
-- `input`s would be recycled if a module with the same name is created again
+- `input`s are still stored on the serve side and consume memory
 
 --
 
@@ -130,31 +130,9 @@ are matched automatically
 
 ---
 # Destroy `observeEvent`s
-- `observeEvent`s stay registered and are duplicated when a module with the
-same `id` is added again
-- many registered `observeEvent`s can negatively impact the performance
-- solution: use the `destroy` method of an `observeEvent`
-- store the `observeEvent` to `session$userData` to access it
+- you can also destroy `observeEvent`s  from removed modules
+- please check out the additional information section of the repository
 
-Check out [Appsilon's blog post](https://appsilon.com/how-to-safely-remove-a-dynamic-shiny-module/) on this topic
-
----
-# Function to destroy `observeEvent`s
-If you name `observeEvent`s in your modules according to the scheme\
-`{module id}_observer_{observe name}`\
-you can use the following function to
-destroy them:
-
-```{r, eval = FALSE}
-remove_observers <- function(id, .session) {
-  invisible(
-    lapply(grep(paste0(id, "_observer"), names(.session$userData), value = TRUE),
-           function(i) {
-             .subset2(.session$userData, i)$destroy()
-           })
-  )
-}
-```
 
 ---
 # Summary

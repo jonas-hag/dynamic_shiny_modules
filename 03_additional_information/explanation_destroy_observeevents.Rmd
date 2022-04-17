@@ -1,0 +1,36 @@
+---
+title: "Destroy `observeEvent`s"
+author: "Jonas Hagenberg"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Rationale
+- `observeEvent`s stay registered and are duplicated when a module with the
+same `id` is added again
+- many registered `observeEvent`s can negatively impact the performance
+
+# Solution
+- use the `destroy` method of an `observeEvent`
+- in order to access the `destroy` method of an `observeEvent`,
+store the `observeEvent` to `session$userData`
+- check out [Appsilon's blog post](https://appsilon.com/how-to-safely-remove-a-dynamic-shiny-module/) on this topic
+
+## Utility function
+If you follow the naming convention of `{module id}_observer_{observe name}` for the `observeEvent`s, you can use the following function to destroy the `observeEvent`s when you delete a module. `id` is the module `id` and for `.session` you pass the `session` object.
+
+Please look at `example_destroy_observeevent.R` for a working example.
+
+```{r, eval = FALSE}
+remove_observers <- function(id, .session) {
+  invisible(
+    lapply(grep(paste0(id, "_observer"), names(.session$userData), value = TRUE),
+           function(i) {
+             .subset2(.session$userData, i)$destroy()
+           })
+  )
+}
+```
