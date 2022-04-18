@@ -61,12 +61,12 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
-  module_counter <- reactiveVal(value = 0)
+  active_modules <- reactiveVal(value = NULL)
   
   observeEvent(input$add_module, {
-    # update the number of currently shown modules
-    module_counter(module_counter() + 1)
-    current_id <- paste0("id_", module_counter())
+    # update the list of currently shown modules
+    active_modules(c(input$add_module, active_modules()))
+    current_id <- paste0("id_", input$add_module)
     
     graph_server(
       id = current_id
@@ -81,8 +81,8 @@ server <- function(input, output, session) {
   observeEvent(input$remove_module, {
     
     # only remove a module if there is at least one module shown
-    if (module_counter() > 0) {
-      current_id <- paste0("id_", module_counter())
+    if (length(active_modules()) > 0) {
+      current_id <- paste0("id_", active_modules()[1])
       removeUI(
         selector = paste0("#", current_id)
       )
@@ -93,8 +93,8 @@ server <- function(input, output, session) {
         .input = input
       )
       
-      # update the number of currently shown modules
-      module_counter(module_counter() - 1)
+      # update the list of currently shown modules
+      active_modules(active_modules()[-1])
     }
   })
 }

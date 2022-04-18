@@ -89,7 +89,7 @@ module_UI <- function(id) {
 # Recap: remove UI of a module
 - use `removeUI`
 - create a selector with `#` and the module `id`
-- use a naming scheme for the modules that can be easily incremented/decremented
+- use a unique `id` for every module
 
 ???
 - this removes the contents of the module on the client side
@@ -139,5 +139,5 @@ are matched automatically
 - use `insertUI`/`removeUI` for the module UI
 - remove inputs and destroy `observeEvent`s to clean up the server side and
 avoid performance issues
-- use incremental or unique `id`s to avoid problems
+- use unique `id`s to avoid problems
 - use dynamic addition/removal only sparingly
