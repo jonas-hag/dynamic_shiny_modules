@@ -57,8 +57,8 @@ server <- function(input, output, session) {
   
   observeEvent(input$add_module, {
     # update the list of currently shown modules
-    active_modules(c(input$add_module, active_modules()))
     current_id <- paste0("id_", input$add_module)
+    active_modules(c(current_id, active_modules()))
     
     graph_server(
       id = current_id
@@ -74,7 +74,7 @@ server <- function(input, output, session) {
     
     # only remove a module if there is at least one module shown
     if (length(active_modules()) > 0) {
-      current_id <- paste0("id_", active_modules()[1])
+      current_id <- active_modules()[1]
       removeUI(
         selector = paste0("#", current_id)
       )
