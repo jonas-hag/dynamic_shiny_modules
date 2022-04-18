@@ -37,14 +37,6 @@ graph_server <- function(id) {
   )
 }
 
-remove_shiny_inputs <- function(id, .input) {
-  invisible(
-    lapply(grep(id, names(.input), value = TRUE), function(i) {
-      .subset2(.input, "impl")$.values$remove(i)
-    })
-  )
-}
-
 ui <- fluidPage(
   actionButton(
     inputId = "add_module",
@@ -85,12 +77,6 @@ server <- function(input, output, session) {
       current_id <- active_modules()[1]
       removeUI(
         selector = paste0("#", current_id)
-      )
-      
-      # remove the inputs
-      remove_shiny_inputs(
-        id = current_id,
-        .input = input
       )
       
       # update the list of currently shown modules
