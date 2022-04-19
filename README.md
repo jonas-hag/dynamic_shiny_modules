@@ -1,5 +1,6 @@
 # Dynamically adding and removing Shiny modules
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+
 This is the teaching material for the tutorial how to dynamically add/remove modules held at the [Appsilon Shiny Conference 2022](https://appsilon.com/2022-appsilon-shiny-conference/).
 
 ## Get started

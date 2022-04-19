@@ -1,9 +1,3 @@
----
-title: "Overview"
-author: "Jonas Hagenberg"
-output: html_document
----
-
 # Overview about the programming examples
 The templates are used during the tutorial as the starting points for the following examples:
 
