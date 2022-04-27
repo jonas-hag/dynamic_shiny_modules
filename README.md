@@ -14,7 +14,7 @@ Clone the repository to your local machine and explore the material. To follow a
 - the presentation in HTML and Rmarkdown format (`dynamic_modules`)
 - the [templates](01_templates) for the different programming parts of the tutorial, have a look at the [overview](01_templates/overview_templates.md)
 - the [solutions](02_solutions)
-- [additional information how to destroy `observeEvent`s](03_additional_informatoin) that was not covered during the tutorial
+- [additional information how to destroy `observeEvent`s](03_additional_information) that was not covered during the tutorial
 
 ## License
 
